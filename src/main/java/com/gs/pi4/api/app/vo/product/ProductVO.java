@@ -1,9 +1,11 @@
-package com.gs.pi4.api.app.vo;
+package com.gs.pi4.api.app.vo.product;
 
 import java.io.Serializable;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.gs.pi4.api.app.vo.ImageVO;
+import com.gs.pi4.api.app.vo.TimestampLogVO;
 
 import org.dozer.Mapping;
 

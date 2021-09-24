@@ -1,0 +1,19 @@
+package com.gs.pi4.api.api.exception;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
+public class BusinessException extends RuntimeException {
+
+	private static final long serialVersionUID = 1L;
+
+	public BusinessException(CodeExceptionEnum code) {
+		super(code.toString());
+	}
+
+	public BusinessException() {
+	}
+
+}
+

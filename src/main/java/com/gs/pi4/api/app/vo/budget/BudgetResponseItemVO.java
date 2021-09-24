@@ -3,8 +3,8 @@ package com.gs.pi4.api.app.vo.budget;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.ProductVO;
 import com.gs.pi4.api.app.vo.TimestampLogVO;
+import com.gs.pi4.api.app.vo.product.ProductVO;
 
 import org.dozer.Mapping;
 

@@ -1,14 +1,23 @@
+server:
+    ssl:
+        key-store: classpath:keystore.p12
+        key-store-password: password
+        key-store-type: pkcs12
+        key-alias: springboot
+        key-password: password
+    port: 8443
+
 spring:
     datasource:
-        driverClassName: com.mysql.cj.jdbc.Driver
-        url: jdbc:mysql://db-cebreja-production.cstmbw1g9vpd.sa-east-1.rds.amazonaws.com/pi4?useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false
-        username: admin
-        password: 2Nv4UP0m1!hM_3ukXDTkgAaBBs4S
+        driverClassName: org.postgresql.Driver
+        url: jdbc:postgresql://192.168.100.42/pi4?useTimezone=true&serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false
+        username: postgres
+        password: 1234
     jpa:
         show-sql: true
         properties:
             hibernate:
-                dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+                dialect: org.hibernate.dialect.PostgreSQL95Dialect
             jdbc:
                 time_zone: UTC
         hibernate:
@@ -23,10 +32,10 @@ spring:
             max-request-size: 150MB
 
 flyway:
-    url: jdbc:mysql://db-cebreja-production.cstmbw1g9vpd.sa-east-1.rds.amazonaws.com/
+    url: jdbc:postgresql://192.168.100.42
     schema: pi4
-    user: admin
-    password: 2Nv4UP0m1!hM_3ukXDTkgAaBBs4S
+    user: postgres
+    password: 1234
 
 security:
     jwt:
@@ -36,11 +45,14 @@ security:
 
 
 
-logging:
-  level:
-    org:
-      springframework:
-        security: DEBUG
+#logging:
+#  level:
+#    org:
+#      springframework:
+#        security: DEBUG
+#        web: DEBUG
+#        context: DEBUG
+
 
 org:
     springframework:

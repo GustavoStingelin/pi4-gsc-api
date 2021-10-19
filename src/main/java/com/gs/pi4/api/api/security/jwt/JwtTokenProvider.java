@@ -62,9 +62,11 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest req) {
         var cookies = req.getCookies();
         if (cookies != null) {
-            String bearerToken = Arrays.stream(cookies).filter(c -> c.getName().equals("Auth-Token")).findFirst()
-                    .map(Cookie::getValue).orElse(null);
-            if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            String bearerToken = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("Auth-Token"))
+                .findFirst()
+                .map(Cookie::getValue).orElse(null);
+            if (bearerToken != null && bearerToken.startsWith("Bearer-")) {
                 return bearerToken.substring(7, bearerToken.length());
             }
         }

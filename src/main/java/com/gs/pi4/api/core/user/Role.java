@@ -1,4 +1,4 @@
-package com.gs.pi4.api.core;
+package com.gs.pi4.api.core.user;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "role")
+@Table(schema = "public", name = "role")
 @Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
 public class Role implements GrantedAuthority {
 

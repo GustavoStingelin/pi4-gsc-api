@@ -1,4 +1,4 @@
-package com.gs.pi4.api.core;
+package com.gs.pi4.api.core.user;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +21,7 @@ import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -32,7 +33,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user")
+@Table(schema = "public", name = "user")
+@Where(clause = "deleted_at is null")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 @Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
 public class User implements UserDetails {

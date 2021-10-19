@@ -2,9 +2,11 @@ package com.gs.pi4.api.app.service;
 
 import java.util.Date;
 
+import com.gs.pi4.api.app.vo.user.UserBasicVO;
 import com.gs.pi4.api.app.vo.user.UserRegistrationVO;
-import com.gs.pi4.api.core.User;
-import com.gs.pi4.api.core.UserRepository;
+import com.gs.pi4.api.core.user.IUserBasic;
+import com.gs.pi4.api.core.user.User;
+import com.gs.pi4.api.core.user.UserRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,12 +51,12 @@ public class UserService implements UserDetailsService {
     }
 
     public User createUser(UserRegistrationVO vo) {
-        User entity = parseUserRegistrationVOToEntity(vo);
+        User entity = parseUserRegistrationVO2Entity(vo);
         entity = repository.save(entity);
         return entity;
     }
 
-    private User parseUserRegistrationVOToEntity(UserRegistrationVO vo) {
+    private User parseUserRegistrationVO2Entity(UserRegistrationVO vo) {
         return User.builder()
             .id(0L)
             .firstName(vo.getFirstName())
@@ -72,4 +74,26 @@ public class UserService implements UserDetailsService {
         var user = repository.findByEmail(email);
         return (user != null);
     }
+
+    private UserBasicVO parseIUserBasic2UserBasicVO(IUserBasic entity) {
+        return UserBasicVO.builder()
+            .firstName(entity.getFirstName())
+            .email(entity.getEmail())
+            .profileImage(entity.getProfileImage())
+            .build();
+    }
+
+    public UserBasicVO parseUser2UserBasicVO(User entity) {
+        return UserBasicVO.builder()
+            .firstName(entity.getFirstName())
+            .email(entity.getEmail())
+            .profileImage(entity.getProfileImage())
+            .build();
+    }
+
+    public UserBasicVO findUserBasicById(Long id) {
+        IUserBasic entity = repository.findUserBasicById(id);
+        return parseIUserBasic2UserBasicVO(entity);
+    }
+
 }

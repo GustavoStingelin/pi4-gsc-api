@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.BuyerVO;
+import com.gs.pi4.api.app.vo.CompanyVO;
 import com.gs.pi4.api.app.vo.TimestampLogVO;
 
 import org.dozer.Mapping;
@@ -24,7 +24,7 @@ public class BudgetRequest implements Serializable {
 	@JsonProperty("id")
 	private Long key;
 
-    private BuyerVO buyer;
+    private CompanyVO buyer;
     private List<BudgetRequestItem> itens;
     private String description;
     private Date expiresOn;

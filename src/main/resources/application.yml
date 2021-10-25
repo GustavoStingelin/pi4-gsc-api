@@ -45,13 +45,13 @@ security:
 
 
 
-#logging:
-#  level:
-#    org:
-#      springframework:
-#        security: DEBUG
-#        web: DEBUG
-#        context: DEBUG
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        web: DEBUG
+        context: DEBUG
 
 
 org:

@@ -1,20 +1,22 @@
 package com.gs.pi4.api.app.vo;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.Date;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.budget.BudgetRequest;
 
 import org.dozer.Mapping;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
-@Getter @Setter @EqualsAndHashCode @Builder
-public class BuyerVO implements Serializable {
+@Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor @ToString
+public class CompanyVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
@@ -22,11 +24,11 @@ public class BuyerVO implements Serializable {
 	@JsonProperty("id")
 	private Long key;
 
-    private ImageVO logo;
+    private Long logo;
     private String name;
     private String document;
-    private List<BudgetRequest> budgetRequests;
-
-    private TimestampLogVO timestampLog;
+    private Date foundedAt;
+    private Date createdAt;
+    private Date changedAt;
 }
 

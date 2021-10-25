@@ -1,5 +1,7 @@
 package com.gs.pi4.api.app.vo.user;
 
-public class UserVO {
+import java.io.Serializable;
+
+public class UserVO implements Serializable {
     
 }

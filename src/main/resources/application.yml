@@ -63,3 +63,25 @@ org:
                         builders:
                             WebSecurity:
                                 debugEnabled: true
+
+app:
+    configuration:
+        route:
+            path:
+                api: "/api/**"
+
+
+cloud:
+    aws:
+        stack:
+            auto: false
+        region:
+            static: us-east-1
+            auto: false
+        endpoint: http://192.168.100.42:8000
+        credentials:
+            access-key: scality_user
+            secret=key: 1234
+        bucket:
+            name: pi4
+            delimiter: /

@@ -20,7 +20,4 @@ public class ImageVO implements Serializable {
 	@JsonProperty("id")
 	private String externalId;
 
-    private String type;
-    private String name;
-
 }

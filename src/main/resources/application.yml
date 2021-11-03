@@ -84,4 +84,3 @@ cloud:
             secret=key: 1234
         bucket:
             name: pi4
-            delimiter: /

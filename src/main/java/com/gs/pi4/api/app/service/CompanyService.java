@@ -22,6 +22,10 @@ public class CompanyService {
         this.repository = repository;
     }
 
+    public boolean userHasCompany(User user, Long companyId) {
+        return repository.findByUserIdAndCompanyId(user.getId(), companyId) != null;
+    }
+
     public CompanyVO createCompany(CompanyVO vo, User user) {
         Company entity = parse2Entity(vo, user);
         entity = repository.save(entity);
@@ -29,7 +33,6 @@ public class CompanyService {
     }
     
     public Company parse2Entity(CompanyVO vo, User user) {
-        System.out.println(vo.toString());
         return Company.builder()
             .id(vo.getKey())
             .name(vo.getName())

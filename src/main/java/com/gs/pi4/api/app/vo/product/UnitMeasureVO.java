@@ -3,7 +3,6 @@ package com.gs.pi4.api.app.vo.product;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.TimestampLogVO;
 
 import org.dozer.Mapping;
 
@@ -25,5 +24,4 @@ public class UnitMeasureVO implements Serializable {
     private String description;
     private boolean onlyInteger;
 
-    private TimestampLogVO timestampLog;
 }

@@ -12,4 +12,7 @@ public interface CompanyRepository extends JpaRepository<Company, Long> {
 
     @Query("SELECT c FROM Company c WHERE c.createdBy.id =:userId")
     List<Company> findAllByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT c FROM Company c WHERE c.id =:companyId AND c.createdBy.id =:userId")
+    Company findByUserIdAndCompanyId(@Param("userId") Long userId, @Param("companyId") Long companyId);
 }

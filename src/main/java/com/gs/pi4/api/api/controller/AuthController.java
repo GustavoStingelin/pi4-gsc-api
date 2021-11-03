@@ -80,10 +80,11 @@ public class AuthController {
             "application/x-yaml" }, consumes = { "application/json", "application/xml", "application/x-yaml" })
     public UserBasicVO signin(@RequestBody UserAccountCredentialsVO data, HttpServletResponse res) {
         try {
+            String token;
             String email = data.getEmail();
             String password = data.getPassword();
             User user = service.findByEmail(email);
-            String token = "";
+            
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
 
             if (user != null) {

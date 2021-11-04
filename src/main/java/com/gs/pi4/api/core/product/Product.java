@@ -1,6 +1,7 @@
 package com.gs.pi4.api.core.product;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -87,6 +88,9 @@ public class Product implements Serializable  {
     private User deletedBy;
 
     public List<Image> getImages() {
+        if (productImages == null) {
+            return new ArrayList<>();
+        }
         return productImages.stream().map(ProductImage::getImage).collect(Collectors.toList());
     }
     

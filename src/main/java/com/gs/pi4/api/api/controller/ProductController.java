@@ -5,6 +5,7 @@ import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 import com.gs.pi4.api.app.service.CompanyService;
 import com.gs.pi4.api.app.service.ProductService;
+import com.gs.pi4.api.app.vo.product.ProductCreateVO;
 import com.gs.pi4.api.app.vo.product.ProductVO;
 import com.gs.pi4.api.core.user.User;
 
@@ -23,7 +24,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -93,6 +96,21 @@ public class ProductController {
         return ResponseEntity.ok().contentLength(data.length)
             .header("Content-disposition", "inline; filename=\"" + id + "/" + key + "\"")
             .body(resource);
+    }
+
+
+    @Transactional
+    @ApiOperation(value = "Create a product")
+    @PostMapping(value = "my", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public ProductVO getMy(Authentication authentication, @ModelAttribute ProductCreateVO vo) {
+        User user = (User) authentication.getPrincipal();
+
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.create(user, vo);
     }
 
 }

@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -14,10 +16,12 @@ import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.amazonaws.util.IOUtils;
 import com.google.common.hash.Hashing;
 import com.gs.pi4.api.api.exception.FileStorageException;
+import com.gs.pi4.api.core.image.Image;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 public abstract class StorageService {
@@ -28,6 +32,9 @@ public abstract class StorageService {
     @Autowired
     private AmazonS3 s3Client;
 
+    @Autowired
+    private ImageService service;    
+
     private String prefix;
 
     protected StorageService(String prefix) {
@@ -36,6 +43,19 @@ public abstract class StorageService {
 
     private String generateKey(Long id, String fileType) {
         return Hashing.sha256().hashString(prefix + id + fileType + new Date() + Math.random(), StandardCharsets.UTF_8).toString() + "." + fileType;
+    }
+
+    @Transactional
+    public List<Image> save(List<MultipartFile> files) {
+        return files.stream().map(this::save).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public Image save(MultipartFile file) {
+        Image entity = service.reserveId();
+        String key = save(file, entity.getId());
+        entity.setExternalId(key);
+        return service.save(entity);
     }
 
     public String save(MultipartFile file, Long id) {

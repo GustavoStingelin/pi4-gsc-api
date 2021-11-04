@@ -1,5 +1,6 @@
 package com.gs.pi4.api.app.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,16 @@ public class ImageService {
     @Autowired
     ImageRepository repository;
 
+
+    public Image reserveId() {
+        Image entity = Image.builder().id(0L).externalId("reserving").build();
+        return repository.save(entity);
+    }
+
+    public Image save(Image entity) {
+        return repository.save(entity);
+    }
+
     public ImageVO parse2ImageVO(Image entity) {
         return ImageVO.builder()
             .externalId(entity.getId() + "/" + entity.getExternalId())
@@ -23,6 +34,10 @@ public class ImageService {
     }
 
     public List<ImageVO> parse2ImageVO(List<Image> entity) {
+        if (entity == null) {
+            return new ArrayList<>();
+        }
+
         return entity.stream().map(this::parse2ImageVO).collect(Collectors.toList());
     }
 

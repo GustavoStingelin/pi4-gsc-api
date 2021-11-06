@@ -1,5 +1,8 @@
 package com.gs.pi4.api.api.controller;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.UnauthorizedActionException;
@@ -23,10 +26,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,23 +71,32 @@ public class ProductController {
         Pageable pageable = PageRequest.of(pageRequest, size, Sort.by(sortDirection, "name"));
 
         Page<ProductVO> page = service.findAllByCompany(pageable, companyId);
-        /*
-         * page .stream() .forEach(el -> el.add( linkTo(
-         * methodOn(ProductController.class).findById(authentication, el.getKey())
-         * ).withSelfRel() ));
-         */
+        page.stream().forEach(el -> el
+                .add(linkTo(methodOn(ProductController.class).findById(authentication, el.getKey())).withSelfRel()));
+
         PagedModel<?> resources = assembler.toModel(page);
 
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
 
-    /*
-     * private ResponseEntity<?> findById(Authentication authentication, Long key) {
-     * return new ; }
-     */
+    @Transactional
+    @ApiOperation(value = "Returns a product")
+    @GetMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
+    public ProductVO findById(Authentication authentication, @PathVariable("id") Long id) {
 
+        User user = (User) authentication.getPrincipal();
+
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findById(id);
+    }
+
+    @Transactional
     @ApiOperation(value = "Returns a resource")
-    @GetMapping(value = "/image/{id}/{key}", produces = {MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_GIF_VALUE})
+    @GetMapping(value = "/image/{id}/{key}", produces = { MediaType.IMAGE_PNG_VALUE, MediaType.IMAGE_JPEG_VALUE,
+            MediaType.IMAGE_GIF_VALUE })
     public ResponseEntity<ByteArrayResource> getImage(Authentication authentication, @PathVariable("id") Long id,
             @PathVariable("key") String key) {
         byte[] data = service.findImage(id, key);
@@ -94,23 +108,49 @@ public class ProductController {
         ByteArrayResource resource = new ByteArrayResource(data);
 
         return ResponseEntity.ok().contentLength(data.length)
-            .header("Content-disposition", "inline; filename=\"" + id + "/" + key + "\"")
-            .body(resource);
+                .header("Content-disposition", "inline; filename=\"" + id + "/" + key + "\"").body(resource);
     }
-
 
     @Transactional
     @ApiOperation(value = "Create a product")
-    @PostMapping(value = "my", produces = { "application/json", "application/xml",
-            "application/x-yaml" })
-    public ProductVO getMy(Authentication authentication, @ModelAttribute ProductCreateVO vo) {
+    @PostMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" })
+    public ProductVO create(Authentication authentication, @ModelAttribute ProductCreateVO vo) {
         User user = (User) authentication.getPrincipal();
-
         if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
         return service.create(user, vo);
+    }
+
+    @Transactional
+    @ApiOperation(value = "Update a product")
+    @PutMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
+    public ProductVO update(Authentication authentication, @ModelAttribute ProductCreateVO vo, @PathVariable("id") Long id) {
+        User user = (User) authentication.getPrincipal();
+
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+        
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.update(user, id, vo);
+    }
+
+    @Transactional
+    @ApiOperation(value = "Delete a product")
+    @DeleteMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
+    public void delete(Authentication authentication, @PathVariable("id") Long id) {
+        User user = (User) authentication.getPrincipal();
+
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        service.delete(user, id);
     }
 
 }

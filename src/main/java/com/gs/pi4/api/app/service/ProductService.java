@@ -37,15 +37,6 @@ public class ProductService {
 
     @Autowired
     ProductImageStorageService imageStorageService;
-/*
-    @Transactional
-    //--  --public void save(ProductVO vo, User user) {
-        // Product entity = parseVOToBeerOrder(vo, user);
-        // entity = repository.save(entity);
-
-        // MultipartFile file = vo.getPhoto();
-        // storage.uploadFile(file, storage.generateKey(entity.getId()));
-    }*/
 
     public Page<ProductVO> findAllByCompany(Pageable pageable, Long companyId) {
         return repository.findAllByCompany(pageable, companyId).map(this::parse2ProductVO);
@@ -76,6 +67,37 @@ public class ProductService {
         return parse2ProductVO(entity);
     }
 
+    public ProductVO update(User user, Long id, ProductCreateVO vo) {
+        Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
+        entity.setId(id);
+        entity.setName(vo.getName());
+        entity.setDescription(vo.getDescription());
+        entity.setPrice(vo.getPrice());
+        entity.setUnitMeasure(unitMeasureService.findById(vo.getUnitMeasureId()));
+        entity.setChangedAt(new Date());
+        entity.setChangedBy(user);
+        entity = repository.save(entity);
+
+        return parse2ProductVO(entity);
+    }
+
+    public void delete(User user, Long id) {
+        Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
+        entity.setId(id);
+        entity.setDeletedAt(new Date());
+        entity.setDeletedBy(user);
+        repository.save(entity);
+    }
+
+    public Long findCompanyIdByProductId(Long id) {
+        Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
+        return entity.getCompany().getId();
+    }
+
+    public ProductVO findById(Long id) {
+        Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
+        return parse2ProductVO(entity);
+    }
 
 
     public Product parse(ProductCreateVO vo) {

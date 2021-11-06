@@ -25,7 +25,7 @@ public class ProductVO extends RepresentationModel<ProductVO> implements Seriali
 
     private String name;
     private String description;
-    private Long price;
+    private Float price;
 
     private UnitMeasureVO unitMeasure;
     private List<ImageVO> images;

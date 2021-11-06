@@ -16,6 +16,9 @@ public class ProductUnitMeasureService {
     @Autowired
     ProductUnitMeasureRepository repository;
 
+    public ProductUnitMeasure findById(Long id) {
+        return repository.findById(id).orElse(null);
+    }
 
     public List<UnitMeasureVO> findAll() {
         return parse2UnitMeasureVO(repository.findAll());

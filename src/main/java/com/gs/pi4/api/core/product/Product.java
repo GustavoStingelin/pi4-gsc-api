@@ -49,7 +49,7 @@ public class Product implements Serializable  {
     private String description;
 
     @Column(name = "price", nullable = true)
-    private Long price;
+    private Float price;
  
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "product_unit_measure_id")

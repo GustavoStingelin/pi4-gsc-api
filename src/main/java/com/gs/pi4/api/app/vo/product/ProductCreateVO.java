@@ -25,7 +25,7 @@ public class ProductCreateVO extends RepresentationModel<ProductCreateVO> {
     private String name;
     private String description;
 
-    private Long price;
+    private Float price;
 
     private Long companyId;
     private Long unitMeasureId;

@@ -2,7 +2,6 @@ package com.gs.pi4.api.core.company;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -29,30 +27,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(schema = "public", name = "company")
+@Table(schema = "public", name = "company_partner")
 @Where(clause = "deleted_at is null")
 @Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
-public class Company implements Serializable  {
+public class CompanyPartner implements Serializable  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "logo_image_id", nullable = false)
-    private Long logoImage;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "from_company_id")
+    private Company fromCompany;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "to_company_id")
+    private Company toCompany;
 
-    @Column(name = "document", nullable = false)
-    private String document;
+    @Column(name = "is_accepted")
+    private Boolean isAccepted;
 
-    @Column(name = "founded_at", nullable = false)
-    @Temporal(TemporalType.DATE)
-    private Date foundedAt;
-
-    @OneToMany(mappedBy = "fromCompany", fetch = FetchType.LAZY)
-    private List<CompanyPartner> partners;
 
     //user log
     @Column(name = "created_at", nullable = false)
@@ -62,14 +56,6 @@ public class Company implements Serializable  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;
-
-    @Column(name = "changed_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date changedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "changed_by")
-    private User changedBy;
     
     @Column(name = "deleted_at")
     @Temporal(TemporalType.TIMESTAMP)

@@ -3,7 +3,7 @@ package com.gs.pi4.api.api.controller;
 import java.util.List;
 
 import com.gs.pi4.api.app.service.CompanyService;
-import com.gs.pi4.api.app.vo.CompanyVO;
+import com.gs.pi4.api.app.vo.company.CompanyVO;
 import com.gs.pi4.api.core.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package com.gs.pi4.api.app.vo;
+package com.gs.pi4.api.app.vo.company;
 
 import java.io.Serializable;
 import java.util.Date;

@@ -5,8 +5,8 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.CompanyVO;
 import com.gs.pi4.api.app.vo.TimestampLogVO;
+import com.gs.pi4.api.app.vo.company.CompanyVO;
 
 import org.dozer.Mapping;
 

@@ -19,10 +19,11 @@ public interface CompanyPartnerRepository extends JpaRepository<CompanyPartner, 
     @Query("SELECT c FROM CompanyPartner c WHERE c.toCompany.id =:toCompanyId AND c.isAccepted IS NULL")
     List<CompanyPartner> findAllPendingRequestsForMe(@Param("toCompanyId") Long toCompanyId);
 
-    @Query("SELECT c FROM CompanyPartner c WHERE c.fromCompany.id =:fromCompanyId AND c.toCompany.id =:toCompanyId AND c.isAccepted = true")
-    Boolean isPartner(@Param("fromCompanyId") Long fromCompanyId, @Param("toCompanyId") Long toCompanyId);
+    @Query("SELECT c FROM CompanyPartner c WHERE ((c.fromCompany.id =:fromCompanyId AND c.toCompany.id =:toCompanyId) OR (c.fromCompany.id =:toCompanyId AND c.toCompany.id =:fromCompanyId)) AND c.isAccepted = true")
+    CompanyPartner isPartner(@Param("fromCompanyId") Long fromCompanyId, @Param("toCompanyId") Long toCompanyId);
 
     @Query("SELECT c FROM CompanyPartner c WHERE c.fromCompany.id =:fromCompanyId AND c.toCompany.id =:toCompanyId AND c.isAccepted IS NULL")
-    CompanyPartner findPartnerRequest(@Param("fromCompanyId") Long fromCompanyId, @Param("toCompanyId") Long toCompanyId);
+    CompanyPartner findPartnerRequest(@Param("fromCompanyId") Long fromCompanyId,
+            @Param("toCompanyId") Long toCompanyId);
 
 }

@@ -1,10 +1,13 @@
 package com.gs.pi4.api.app.service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.ResourceNotFoundException;
+import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
 import com.gs.pi4.api.app.vo.product.ProductCreateVO;
 import com.gs.pi4.api.app.vo.product.ProductVO;
 import com.gs.pi4.api.core.company.Company;
@@ -38,8 +41,27 @@ public class ProductService {
     @Autowired
     ProductImageStorageService imageStorageService;
 
+    @Autowired
+    CompanyPartnerService companyPartnerService;
+
+    @Autowired
+    CompanyService companyService;
+
     public Page<ProductVO> findAllByCompany(Pageable pageable, Long companyId) {
         return repository.findAllByCompany(pageable, companyId).map(this::parse2ProductVO);
+    }
+
+    public List<ProductVO> findAllByCompanyInPartner(Long companyId) {
+        List<Long> companyPartnersId = companyPartnerService.getPartners(companyId).stream().map(CompanyPartnerVO::getToCompanyId).collect(Collectors.toList());
+        return parse2ProductVO(repository.findAllByCompanyInPartner(companyPartnersId));
+    }
+
+    public List<ProductVO> findAllByCompanyInPartner(Long companyId, Long partnerId) {
+        List<Long> companyPartnersId = new ArrayList<>();
+        if(Boolean.TRUE.equals(companyPartnerService.isPartner(companyId, partnerId))) {
+            companyPartnersId.add(partnerId);
+        }
+        return parse2ProductVO(repository.findAllByCompanyInPartner(companyPartnersId));
     }
 
     public ProductVO parse2ProductVO(Product entity) {
@@ -50,7 +72,12 @@ public class ProductService {
             .price(entity.getPrice())
             .unitMeasure(unitMeasureService.parse2UnitMeasureVO(entity.getUnitMeasure()))
             .images(imageService.parse2ImageVO(entity.getImages()))
+            .company(companyPartnerService.parse2CompanyPartnerVO(entity.getCompany()))
             .build();
+    }
+
+    public List<ProductVO> parse2ProductVO(List<Product> entities) {
+        return entities.stream().map(this::parse2ProductVO).collect(Collectors.toList());
     }
 
 

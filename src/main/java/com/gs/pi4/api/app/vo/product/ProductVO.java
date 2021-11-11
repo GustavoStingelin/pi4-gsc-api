@@ -5,6 +5,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.gs.pi4.api.app.vo.ImageVO;
+import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
+import com.gs.pi4.api.app.vo.company.CompanyVO;
+import com.gs.pi4.api.core.company.Company;
 
 import org.dozer.Mapping;
 import org.springframework.hateoas.RepresentationModel;
@@ -27,7 +30,9 @@ public class ProductVO extends RepresentationModel<ProductVO> implements Seriali
     private String description;
     private Float price;
 
+    private CompanyPartnerVO company;
     private UnitMeasureVO unitMeasure;
     private List<ImageVO> images;
+
 
 }

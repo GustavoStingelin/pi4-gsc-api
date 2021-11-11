@@ -41,7 +41,7 @@ public class CompanyController {
     public CompanyVO createMyCompany(Authentication authentication, @RequestBody CompanyVO vo) {
         User user = (User) authentication.getPrincipal();
         vo.setKey(null);
-        vo.setLogo(0L);
+        vo.setLogo(1L);
         return service.createCompany(vo, user);
     }
 

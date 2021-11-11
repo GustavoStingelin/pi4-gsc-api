@@ -3,6 +3,8 @@ package com.gs.pi4.api.api.controller;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+import java.util.List;
+
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.UnauthorizedActionException;
@@ -57,7 +59,7 @@ public class ProductController {
     @ApiOperation(value = "Returns a list of my products")
     @GetMapping(value = "my/company/{companyId}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
-    public ResponseEntity<?> getMy(Authentication authentication, @PathVariable("companyId") Long companyId,
+    public ResponseEntity<PagedModel<?>> getMy(Authentication authentication, @PathVariable("companyId") Long companyId,
             @RequestParam(value = "page", defaultValue = "0") int pageRequest,
             @RequestParam(value = "limit", defaultValue = "10") int size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
@@ -123,16 +125,42 @@ public class ProductController {
         return service.create(user, vo);
     }
 
+    @ApiOperation(value = "Get a product list")
+    @GetMapping(value = "/company/{id}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public List<ProductVO> getAllInPartners(Authentication authentication, @PathVariable("id") Long id) {
+        User user = (User) authentication.getPrincipal();
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findAllByCompanyInPartner(id);
+    }
+
+    
+    @ApiOperation(value = "Get a product list")
+    @GetMapping(value = "/company/{id}/of_company/{id2}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public List<ProductVO> getAllInCompany(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
+        User user = (User) authentication.getPrincipal();
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findAllByCompanyInPartner(id, id2);
+    }
+
     @Transactional
     @ApiOperation(value = "Update a product")
     @PutMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
-    public ProductVO update(Authentication authentication, @ModelAttribute ProductCreateVO vo, @PathVariable("id") Long id) {
+    public ProductVO update(Authentication authentication, @ModelAttribute ProductCreateVO vo,
+            @PathVariable("id") Long id) {
         User user = (User) authentication.getPrincipal();
 
         if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
-        
+
         if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }

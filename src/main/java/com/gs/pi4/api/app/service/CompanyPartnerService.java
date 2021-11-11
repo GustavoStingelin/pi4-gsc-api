@@ -34,6 +34,10 @@ public class CompanyPartnerService {
         return parse2CompanyPartnerVO(partner);
     }
 
+    public Boolean isPartner(Long fromCompanyId, Long toCompanyId) {
+        return repository.isPartner(fromCompanyId, toCompanyId) != null;
+    }
+
     public List<CompanyPartnerVO> getPartners(Long companyId) {
         List<CompanyPartner> partners = repository.findAllPartners(companyId);
         partners = partners.stream().map(el -> {
@@ -94,6 +98,11 @@ public class CompanyPartnerService {
     public CompanyPartnerVO parse2CompanyPartnerVO(CompanyPartner entity) {
         return CompanyPartnerVO.builder().toCompanyId(entity.getToCompany().getId())
                 .toCompanyName(entity.getToCompany().getName()).isAccepted(entity.getIsAccepted()).build();
+    }
+
+    public CompanyPartnerVO parse2CompanyPartnerVO(Company entity) {
+        return CompanyPartnerVO.builder().toCompanyId(entity.getId()).toCompanyName(entity.getName())
+                .build();
     }
 
     public List<CompanyPartnerVO> parse2CompanyPartnerVO(List<CompanyPartner> entities) {

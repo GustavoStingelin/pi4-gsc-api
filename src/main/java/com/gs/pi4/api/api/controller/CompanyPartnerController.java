@@ -40,7 +40,7 @@ public class CompanyPartnerController {
             @PathVariable("companyId") Long companyId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -54,7 +54,7 @@ public class CompanyPartnerController {
             @PathVariable("companyId") Long companyId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -67,7 +67,7 @@ public class CompanyPartnerController {
             @PathVariable("companyId") Long companyId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
         return service.findAllPendingRequestsForMe(companyId);
@@ -80,7 +80,7 @@ public class CompanyPartnerController {
             @PathVariable("companyId") Long companyId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -95,7 +95,7 @@ public class CompanyPartnerController {
             @PathVariable("toId") Long toId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, fromId)) || Objects.equals(fromId, toId)) {
+        if (!companyService.userHasCompany(user, fromId) || Objects.equals(fromId, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -114,8 +114,8 @@ public class CompanyPartnerController {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, fromId))
-                && Boolean.FALSE.equals(companyService.userHasCompany(user, toId))) {
+        if (!companyService.userHasCompany(user, fromId)
+                && !companyService.userHasCompany(user, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -134,7 +134,7 @@ public class CompanyPartnerController {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, toId))) {
+        if (!companyService.userHasCompany(user, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 

@@ -66,7 +66,7 @@ public class ProductController {
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -89,7 +89,7 @@ public class ProductController {
 
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -119,7 +119,7 @@ public class ProductController {
     @PostMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" })
     public ProductVO create(Authentication authentication, @ModelAttribute ProductCreateVO vo) {
         User user = (User) authentication.getPrincipal();
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
+        if (!companyService.userHasCompany(user, vo.getCompanyId())) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -131,7 +131,7 @@ public class ProductController {
             "application/x-yaml" })
     public List<ProductVO> getAllInPartners(Authentication authentication, @PathVariable("id") Long id) {
         User user = (User) authentication.getPrincipal();
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+        if (!companyService.userHasCompany(user, id)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -143,7 +143,7 @@ public class ProductController {
             "application/x-yaml" })
     public ProductVO getProduct(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
         User user = (User) authentication.getPrincipal();
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+        if (!companyService.userHasCompany(user, id)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -156,7 +156,7 @@ public class ProductController {
             "application/x-yaml" })
     public List<ProductVO> getAllInCompany(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
         User user = (User) authentication.getPrincipal();
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+        if (!companyService.userHasCompany(user, id)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -170,11 +170,11 @@ public class ProductController {
             @PathVariable("id") Long id) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getCompanyId()))) {
+        if (!companyService.userHasCompany(user, vo.getCompanyId())) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -187,7 +187,7 @@ public class ProductController {
     public void delete(Authentication authentication, @PathVariable("id") Long id) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, service.findCompanyIdByProductId(id)))) {
+        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 

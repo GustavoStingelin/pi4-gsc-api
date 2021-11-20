@@ -70,7 +70,7 @@ public class ProductService {
     public ProductVO findByIdInCompanyPartner(@NonNull Long companyId, @NonNull Long productId) {
         Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.PRODUCT_NOT_FOUND.toString()));
 
-        if(Boolean.FALSE.equals(companyPartnerService.isPartner(companyId, product.getCompany().getId()))) {
+        if(!companyPartnerService.isPartner(companyId, product.getCompany().getId())) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
         

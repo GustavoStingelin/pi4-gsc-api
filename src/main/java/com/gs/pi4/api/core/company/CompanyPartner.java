@@ -45,7 +45,7 @@ public class CompanyPartner implements Serializable  {
     private Company toCompany;
 
     @Column(name = "is_accepted")
-    private Boolean isAccepted;
+    private boolean isAccepted;
 
 
     //user log

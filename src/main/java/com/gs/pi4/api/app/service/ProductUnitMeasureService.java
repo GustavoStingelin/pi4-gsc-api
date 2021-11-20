@@ -35,7 +35,7 @@ public class ProductUnitMeasureService {
             .key(entity.getId())
             .name(entity.getName())
             .description(entity.getDescription())
-            .onlyInteger(entity.getOnlyInteger())
+            .onlyInteger(entity.isOnlyInteger())
             .build();
     }
 }

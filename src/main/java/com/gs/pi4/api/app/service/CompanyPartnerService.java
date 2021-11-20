@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
+import com.gs.pi4.api.app.vo.product.ProductVO;
 import com.gs.pi4.api.core.company.Company;
 import com.gs.pi4.api.core.company.CompanyPartner;
 import com.gs.pi4.api.core.company.CompanyPartnerRepository;
@@ -36,7 +37,7 @@ public class CompanyPartnerService {
         return parse2CompanyPartnerVO(partner);
     }
 
-    public Boolean isPartner(@NonNull Long fromCompanyId, @NonNull Long toCompanyId) {
+    public boolean isPartner(@NonNull Long fromCompanyId, @NonNull Long toCompanyId) {
         return repository.isPartner(fromCompanyId, toCompanyId) != null;
     }
 
@@ -78,7 +79,7 @@ public class CompanyPartnerService {
         CompanyPartner partner = repository.findPartnerRequest(from, to);
 
         if (partner != null) {
-            partner.setIsAccepted(true);
+            partner.setAccepted(true);
             repository.save(partner);
         }
     }
@@ -87,19 +88,19 @@ public class CompanyPartnerService {
         CompanyPartner partner = repository.findPartnerRequest(from, to);
 
         if (partner != null) {
-            partner.setIsAccepted(false);
+            partner.setAccepted(false);
             repository.save(partner);
         }
     }
 
     protected CompanyPartner parse(@NonNull CompanyPartnerVO vo) {
         return CompanyPartner.builder().toCompany(Company.builder().id(vo.getId()).build())
-                .isAccepted(vo.getIsAccepted()).build();
+                .isAccepted(vo.isAccepted()).build();
     }
 
     protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull CompanyPartner entity) {
         return CompanyPartnerVO.builder().id(entity.getToCompany().getId())
-                .name(entity.getToCompany().getName()).isAccepted(entity.getIsAccepted()).build();
+                .name(entity.getToCompany().getName()).isAccepted(entity.isAccepted()).build();
     }
 
     protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull Company entity) {
@@ -109,6 +110,10 @@ public class CompanyPartnerService {
 
     protected List<CompanyPartnerVO> parse2CompanyPartnerVO(@NonNull List<CompanyPartner> entities) {
         return entities.stream().map(this::parse2CompanyPartnerVO).collect(Collectors.toList());
+    }
+
+    public boolean isPartner(CompanyPartnerVO buyer, ProductVO product) {
+        return false;
     }
 
 }

@@ -41,7 +41,7 @@ public class BudgetRequestController {
             @PathVariable("companyId") Long companyId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -55,7 +55,7 @@ public class BudgetRequestController {
             @PathVariable("budgetId") Long budgetId) {
         User user = (User) authentication.getPrincipal();
 
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, companyId))) {
+        if (!companyService.userHasCompany(user, companyId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -68,7 +68,8 @@ public class BudgetRequestController {
             "application/json", "application/xml", "application/x-yaml" })
     public ProductVO create(Authentication authentication, @ModelAttribute BudgetRequestVO vo) {
         User user = (User) authentication.getPrincipal();
-        if (Boolean.FALSE.equals(companyService.userHasCompany(user, vo.getBuyer().getId()))) {
+
+        if (!companyService.userHasCompany(user, vo.getBuyer().getId())) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 

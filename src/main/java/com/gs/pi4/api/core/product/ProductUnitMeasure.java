@@ -43,7 +43,7 @@ public class ProductUnitMeasure implements Serializable  {
     private String description;
 
     @Column(name = "only_integer", nullable = false)
-    private Boolean onlyInteger;
+    private boolean onlyInteger;
 
 
     //user log

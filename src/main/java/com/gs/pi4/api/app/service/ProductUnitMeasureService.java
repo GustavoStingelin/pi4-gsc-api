@@ -10,13 +10,15 @@ import com.gs.pi4.api.core.product.ProductUnitMeasureRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.NonNull;
+
 @Service
 public class ProductUnitMeasureService {
 
     @Autowired
     ProductUnitMeasureRepository repository;
 
-    public ProductUnitMeasure findById(Long id) {
+    public ProductUnitMeasure findById(@NonNull Long id) {
         return repository.findById(id).orElse(null);
     }
 
@@ -24,11 +26,11 @@ public class ProductUnitMeasureService {
         return parse2UnitMeasureVO(repository.findAll());
     }    
 
-    public List<UnitMeasureVO> parse2UnitMeasureVO(List<ProductUnitMeasure> entities) {
+    protected List<UnitMeasureVO> parse2UnitMeasureVO(@NonNull List<ProductUnitMeasure> entities) {
         return entities.stream().map(this::parse2UnitMeasureVO).collect(Collectors.toList());
     }
 
-    public UnitMeasureVO parse2UnitMeasureVO(ProductUnitMeasure entity) {
+    protected UnitMeasureVO parse2UnitMeasureVO(@NonNull ProductUnitMeasure entity) {
         return UnitMeasureVO.builder()
             .key(entity.getId())
             .name(entity.getName())

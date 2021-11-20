@@ -11,6 +11,8 @@ import com.gs.pi4.api.core.image.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.NonNull;
+
 @Service
 public class ImageService {
 
@@ -23,17 +25,17 @@ public class ImageService {
         return repository.save(entity);
     }
 
-    public Image save(Image entity) {
+    public Image save(@NonNull Image entity) {
         return repository.save(entity);
     }
 
-    public ImageVO parse2ImageVO(Image entity) {
+    protected ImageVO parse2ImageVO(@NonNull Image entity) {
         return ImageVO.builder()
             .externalId(entity.getId() + "/" + entity.getExternalId())
             .build();
     }
 
-    public List<ImageVO> parse2ImageVO(List<Image> entity) {
+    protected List<ImageVO> parse2ImageVO(List<Image> entity) {
         if (entity == null) {
             return new ArrayList<>();
         }
@@ -41,7 +43,7 @@ public class ImageService {
         return entity.stream().map(this::parse2ImageVO).collect(Collectors.toList());
     }
 
-    public Image findImageByIdAndKey(Long id, String key) {
+    protected Image findImageByIdAndKey(@NonNull Long id, @NonNull String key) {
         return repository.findByIdAndKey(id, key);
     }
 }

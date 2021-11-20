@@ -13,6 +13,8 @@ import com.gs.pi4.api.core.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import lombok.NonNull;
+
 @Service
 public class CompanyPartnerService {
 
@@ -26,7 +28,7 @@ public class CompanyPartnerService {
         this.repository = repository;
     }
 
-    public CompanyPartnerVO sendPartnerRequest(Company from, Company to, User user) {
+    public CompanyPartnerVO sendPartnerRequest(@NonNull Company from, @NonNull Company to, @NonNull User user) {
         CompanyPartner partner = CompanyPartner.builder().fromCompany(from).toCompany(to).createdBy(user)
                 .createdAt(new Date()).build();
 
@@ -34,11 +36,11 @@ public class CompanyPartnerService {
         return parse2CompanyPartnerVO(partner);
     }
 
-    public Boolean isPartner(Long fromCompanyId, Long toCompanyId) {
+    public Boolean isPartner(@NonNull Long fromCompanyId, @NonNull Long toCompanyId) {
         return repository.isPartner(fromCompanyId, toCompanyId) != null;
     }
 
-    public List<CompanyPartnerVO> getPartners(Long companyId) {
+    public List<CompanyPartnerVO> getPartners(@NonNull Long companyId) {
         List<CompanyPartner> partners = repository.findAllPartners(companyId);
         partners = partners.stream().map(el -> {
              if (el.getToCompany().getId().equals(companyId)) {
@@ -50,17 +52,17 @@ public class CompanyPartnerService {
         return parse2CompanyPartnerVO(partners);
     }
 
-    public List<CompanyPartnerVO> findAllExceptsCompanyId(Long companyId) {
+    public List<CompanyPartnerVO> findAllExceptsCompanyId(@NonNull Long companyId) {
         List<Company> companies = companyService.findAllExceptsCompanyId(companyId);
         return companyService.parse2CompanyPartnerVO(companies, companyId);
     }
 
-    public List<CompanyPartnerVO> findAllPendingPartners(Long companyId) {
+    public List<CompanyPartnerVO> findAllPendingPartners(@NonNull Long companyId) {
         List<CompanyPartner> entities = repository.findAllPendingPartners(companyId);
         return parse2CompanyPartnerVO(entities);
     }
 
-    public List<CompanyPartnerVO> findAllPendingRequestsForMe(Long companyId) {
+    public List<CompanyPartnerVO> findAllPendingRequestsForMe(@NonNull Long companyId) {
         List<CompanyPartner> entities = repository.findAllPendingRequestsForMe(companyId);
         entities = entities.stream().map(el -> {
             if (el.getToCompany().getId().equals(companyId)) {
@@ -72,7 +74,7 @@ public class CompanyPartnerService {
         return parse2CompanyPartnerVO(entities);
     }
 
-    public void acceptPartnerRequest(Long from, Long to) {
+    public void acceptPartnerRequest(@NonNull Long from, @NonNull Long to) {
         CompanyPartner partner = repository.findPartnerRequest(from, to);
 
         if (partner != null) {
@@ -81,7 +83,7 @@ public class CompanyPartnerService {
         }
     }
 
-    public void declinePartnerRequest(Long from, Long to) {
+    public void declinePartnerRequest(@NonNull Long from, @NonNull Long to) {
         CompanyPartner partner = repository.findPartnerRequest(from, to);
 
         if (partner != null) {
@@ -90,22 +92,22 @@ public class CompanyPartnerService {
         }
     }
 
-    public CompanyPartner parse(CompanyPartnerVO vo) {
-        return CompanyPartner.builder().toCompany(Company.builder().id(vo.getToCompanyId()).build())
+    protected CompanyPartner parse(@NonNull CompanyPartnerVO vo) {
+        return CompanyPartner.builder().toCompany(Company.builder().id(vo.getId()).build())
                 .isAccepted(vo.getIsAccepted()).build();
     }
 
-    public CompanyPartnerVO parse2CompanyPartnerVO(CompanyPartner entity) {
-        return CompanyPartnerVO.builder().toCompanyId(entity.getToCompany().getId())
-                .toCompanyName(entity.getToCompany().getName()).isAccepted(entity.getIsAccepted()).build();
+    protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull CompanyPartner entity) {
+        return CompanyPartnerVO.builder().id(entity.getToCompany().getId())
+                .name(entity.getToCompany().getName()).isAccepted(entity.getIsAccepted()).build();
     }
 
-    public CompanyPartnerVO parse2CompanyPartnerVO(Company entity) {
-        return CompanyPartnerVO.builder().toCompanyId(entity.getId()).toCompanyName(entity.getName())
+    protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull Company entity) {
+        return CompanyPartnerVO.builder().id(entity.getId()).name(entity.getName())
                 .build();
     }
 
-    public List<CompanyPartnerVO> parse2CompanyPartnerVO(List<CompanyPartner> entities) {
+    protected List<CompanyPartnerVO> parse2CompanyPartnerVO(@NonNull List<CompanyPartner> entities) {
         return entities.stream().map(this::parse2CompanyPartnerVO).collect(Collectors.toList());
     }
 

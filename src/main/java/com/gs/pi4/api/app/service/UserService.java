@@ -15,6 +15,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import lombok.NonNull;
+
 @Service
 public class UserService implements UserDetailsService {
 
@@ -27,7 +29,7 @@ public class UserService implements UserDetailsService {
         this.repository = repository;
     }
 
-    public UserDetails loadByEmail(String email) throws UsernameNotFoundException {
+    public UserDetails loadByEmail(@NonNull String email) throws UsernameNotFoundException {
         UserDetails user = repository.findByEmail(email);
         if (user != null) {
             return user;
@@ -36,7 +38,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User findByEmail(String email) throws UsernameNotFoundException {
+    public User findByEmail(@NonNull String email) throws UsernameNotFoundException {
         User user = repository.findByEmail(email);
         if (user != null) {
             return user;
@@ -46,17 +48,17 @@ public class UserService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
         return loadByEmail(email);
     }
 
-    public User createUser(UserRegistrationVO vo) {
+    public User createUser(@NonNull UserRegistrationVO vo) {
         User entity = parseUserRegistrationVO2Entity(vo);
         entity = repository.save(entity);
         return entity;
     }
 
-    private User parseUserRegistrationVO2Entity(UserRegistrationVO vo) {
+    private User parseUserRegistrationVO2Entity(@NonNull UserRegistrationVO vo) {
         return User.builder()
             .id(0L)
             .firstName(vo.getFirstName())
@@ -70,12 +72,12 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
-    public boolean hasEmail(String email) {
+    public boolean hasEmail(@NonNull String email) {
         var user = repository.findByEmail(email);
         return (user != null);
     }
 
-    private UserBasicVO parseIUserBasic2UserBasicVO(IUserBasic entity) {
+    private UserBasicVO parseIUserBasic2UserBasicVO(@NonNull IUserBasic entity) {
         return UserBasicVO.builder()
             .firstName(entity.getFirstName())
             .email(entity.getEmail())
@@ -83,7 +85,7 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
-    public UserBasicVO parseUser2UserBasicVO(User entity) {
+    public UserBasicVO parseUser2UserBasicVO(@NonNull User entity) {
         return UserBasicVO.builder()
             .firstName(entity.getFirstName())
             .email(entity.getEmail())
@@ -91,7 +93,7 @@ public class UserService implements UserDetailsService {
             .build();
     }
 
-    public UserBasicVO findUserBasicById(Long id) {
+    public UserBasicVO findUserBasicById(@NonNull Long id) {
         IUserBasic entity = repository.findUserBasicById(id);
         return parseIUserBasic2UserBasicVO(entity);
     }

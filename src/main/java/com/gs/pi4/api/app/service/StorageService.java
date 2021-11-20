@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.NonNull;
+
 public abstract class StorageService {
 
     @Value("${cloud.aws.bucket.name}")
@@ -37,28 +39,28 @@ public abstract class StorageService {
 
     private String prefix;
 
-    protected StorageService(String prefix) {
+    protected StorageService(@NonNull String prefix) {
         this.prefix = prefix + "/";
     }
 
-    private String generateKey(Long id, String fileType) {
+    private String generateKey(@NonNull Long id, @NonNull String fileType) {
         return Hashing.sha256().hashString(prefix + id + fileType + new Date() + Math.random(), StandardCharsets.UTF_8).toString() + "." + fileType;
     }
 
     @Transactional
-    public List<Image> save(List<MultipartFile> files) {
+    public List<Image> save(@NonNull List<MultipartFile> files) {
         return files.stream().map(this::save).collect(Collectors.toList());
     }
 
     @Transactional
-    public Image save(MultipartFile file) {
+    public Image save(@NonNull MultipartFile file) {
         Image entity = service.reserveId();
         String key = save(file, entity.getId());
         entity.setExternalId(key);
         return service.save(entity);
     }
 
-    public String save(MultipartFile file, Long id) {
+    public String save(@NonNull MultipartFile file, @NonNull Long id) {
         try {
             File fileObj = convertMultiPartFileToFile(file);
             String key = generateKey(id, FilenameUtils.getExtension(file.getOriginalFilename()));
@@ -70,7 +72,7 @@ public abstract class StorageService {
         }
     }
 
-    public byte[] find(String key) {
+    public byte[] find(@NonNull String key) {
         S3Object s3Object = s3Client.getObject(bucketName, prefix + key);
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
@@ -81,7 +83,7 @@ public abstract class StorageService {
         return new byte[0];
     }
 
-    public void delete(String key) {
+    public void delete(@NonNull String key) {
         try {
             s3Client.deleteObject(bucketName, prefix + key);
         } catch (Exception e) {
@@ -89,7 +91,7 @@ public abstract class StorageService {
         }
     }
 
-    private File convertMultiPartFileToFile(MultipartFile file) {
+    private File convertMultiPartFileToFile(@NonNull MultipartFile file) {
         File convertedFile = new File(file.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
             fos.write(file.getBytes());
@@ -99,7 +101,7 @@ public abstract class StorageService {
         return convertedFile;
     }
 
-    public void copy(String sourceKey, String destinationKey) {
+    public void copy(@NonNull String sourceKey, @NonNull String destinationKey) {
         s3Client.copyObject(bucketName, sourceKey, bucketName, destinationKey);
     }
 

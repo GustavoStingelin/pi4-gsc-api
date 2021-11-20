@@ -12,6 +12,8 @@ import com.gs.pi4.api.core.product.ProductImageId;
 
 import org.springframework.stereotype.Service;
 
+import lombok.NonNull;
+
 @Service
 public class ProductImageStorageService extends StorageService {
     
@@ -21,7 +23,7 @@ public class ProductImageStorageService extends StorageService {
         super(PREFIX);
     }
 
-    public ProductImage parse2ProductImage(Image image, Product product) {
+    protected ProductImage parse2ProductImage(@NonNull Image image, @NonNull Product product) {
         return ProductImage.builder()
             .createdAt(new Date())
             .id(new ProductImageId(product.getId(), image.getId()))
@@ -30,7 +32,7 @@ public class ProductImageStorageService extends StorageService {
             .build();
     }
 
-    public List<ProductImage> parseImage(List<Image> images, Product product) {
+    protected List<ProductImage> parseImage(@NonNull List<Image> images, @NonNull Product product) {
         return images.stream().map(el -> parse2ProductImage(el, product)).collect(Collectors.toList());
     }
 }

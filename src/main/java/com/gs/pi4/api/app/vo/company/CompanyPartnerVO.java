@@ -15,8 +15,8 @@ public class CompanyPartnerVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
 
-    private Long toCompanyId;
-    private String toCompanyName;
+    private Long id;
+    private String name;
     private Boolean isAccepted;
 }
 

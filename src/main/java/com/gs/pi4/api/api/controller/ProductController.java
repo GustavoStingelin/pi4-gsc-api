@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.PagedModel;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -59,7 +60,7 @@ public class ProductController {
     @ApiOperation(value = "Returns a list of my products")
     @GetMapping(value = "my/company/{companyId}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
-    public ResponseEntity<PagedModel<?>> getMy(Authentication authentication, @PathVariable("companyId") Long companyId,
+    public ResponseEntity<PagedModel<EntityModel<ProductVO>>> getMy(Authentication authentication, @PathVariable("companyId") Long companyId,
             @RequestParam(value = "page", defaultValue = "0") int pageRequest,
             @RequestParam(value = "limit", defaultValue = "10") int size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
@@ -76,7 +77,7 @@ public class ProductController {
         page.stream().forEach(el -> el
                 .add(linkTo(methodOn(ProductController.class).findById(authentication, el.getKey())).withSelfRel()));
 
-        PagedModel<?> resources = assembler.toModel(page);
+        PagedModel<EntityModel<ProductVO>> resources = assembler.toModel(page);
 
         return new ResponseEntity<>(resources, HttpStatus.OK);
     }
@@ -135,6 +136,18 @@ public class ProductController {
         }
 
         return service.findAllByCompanyInPartner(id);
+    }
+
+    @ApiOperation(value = "Get a product")
+    @GetMapping(value = "/{id2}/company/{id}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public ProductVO getProduct(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
+        User user = (User) authentication.getPrincipal();
+        if (Boolean.FALSE.equals(companyService.userHasCompany(user, id))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findByIdInCompanyPartner(id, id2);
     }
 
     

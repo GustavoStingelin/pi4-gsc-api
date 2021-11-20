@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.ResourceNotFoundException;
+import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
 import com.gs.pi4.api.app.vo.product.ProductCreateVO;
 import com.gs.pi4.api.app.vo.product.ProductVO;
@@ -22,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import lombok.NonNull;
 
 @Service
 public class ProductService {
@@ -47,16 +50,16 @@ public class ProductService {
     @Autowired
     CompanyService companyService;
 
-    public Page<ProductVO> findAllByCompany(Pageable pageable, Long companyId) {
+    public Page<ProductVO> findAllByCompany(@NonNull Pageable pageable, @NonNull Long companyId) {
         return repository.findAllByCompany(pageable, companyId).map(this::parse2ProductVO);
     }
 
-    public List<ProductVO> findAllByCompanyInPartner(Long companyId) {
-        List<Long> companyPartnersId = companyPartnerService.getPartners(companyId).stream().map(CompanyPartnerVO::getToCompanyId).collect(Collectors.toList());
+    public List<ProductVO> findAllByCompanyInPartner(@NonNull Long companyId) {
+        List<Long> companyPartnersId = companyPartnerService.getPartners(companyId).stream().map(CompanyPartnerVO::getId).collect(Collectors.toList());
         return parse2ProductVO(repository.findAllByCompanyInPartner(companyPartnersId));
     }
 
-    public List<ProductVO> findAllByCompanyInPartner(Long companyId, Long partnerId) {
+    public List<ProductVO> findAllByCompanyInPartner(@NonNull Long companyId, @NonNull Long partnerId) {
         List<Long> companyPartnersId = new ArrayList<>();
         if(Boolean.TRUE.equals(companyPartnerService.isPartner(companyId, partnerId))) {
             companyPartnersId.add(partnerId);
@@ -64,7 +67,17 @@ public class ProductService {
         return parse2ProductVO(repository.findAllByCompanyInPartner(companyPartnersId));
     }
 
-    public ProductVO parse2ProductVO(Product entity) {
+    public ProductVO findByIdInCompanyPartner(@NonNull Long companyId, @NonNull Long productId) {
+        Product product = repository.findById(productId).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.PRODUCT_NOT_FOUND.toString()));
+
+        if(Boolean.FALSE.equals(companyPartnerService.isPartner(companyId, product.getCompany().getId()))) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+        
+        return parse2ProductVO(product);
+    }
+
+    protected ProductVO parse2ProductVO(@NonNull Product entity) {
         return ProductVO.builder()
             .key(entity.getId())
             .name(entity.getName())
@@ -76,12 +89,12 @@ public class ProductService {
             .build();
     }
 
-    public List<ProductVO> parse2ProductVO(List<Product> entities) {
+    protected List<ProductVO> parse2ProductVO(@NonNull List<Product> entities) {
         return entities.stream().map(this::parse2ProductVO).collect(Collectors.toList());
     }
 
 
-    public ProductVO create(User user, ProductCreateVO vo) {
+    public ProductVO create(@NonNull User user, @NonNull ProductCreateVO vo) {
         Product entity = parse(vo);
         entity.setId(0L);
         entity.setCreatedAt(new Date());
@@ -94,7 +107,7 @@ public class ProductService {
         return parse2ProductVO(entity);
     }
 
-    public ProductVO update(User user, Long id, ProductCreateVO vo) {
+    public ProductVO update(@NonNull User user, @NonNull Long id, @NonNull ProductCreateVO vo) {
         Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
         entity.setId(id);
         entity.setName(vo.getName());
@@ -108,7 +121,7 @@ public class ProductService {
         return parse2ProductVO(entity);
     }
 
-    public void delete(User user, Long id) {
+    public void delete(@NonNull User user, @NonNull Long id) {
         Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
         entity.setId(id);
         entity.setDeletedAt(new Date());
@@ -116,18 +129,18 @@ public class ProductService {
         repository.save(entity);
     }
 
-    public Long findCompanyIdByProductId(Long id) {
+    public Long findCompanyIdByProductId(@NonNull Long id) {
         Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
         return entity.getCompany().getId();
     }
 
-    public ProductVO findById(Long id) {
+    public ProductVO findById(@NonNull Long id) {
         Product entity = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
         return parse2ProductVO(entity);
     }
 
 
-    public Product parse(ProductCreateVO vo) {
+    protected Product parse(@NonNull ProductCreateVO vo) {
         return Product.builder()
             .id(vo.getKey())
             .name(vo.getName())
@@ -138,7 +151,7 @@ public class ProductService {
             .build();
     }
 
-    public byte[] findImage(Long id, String key) {
+    public byte[] findImage(@NonNull Long id, @NonNull String key) {
         if(imageService.findImageByIdAndKey(id, key) == null) {
             throw new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString());
         }

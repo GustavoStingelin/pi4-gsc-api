@@ -25,6 +25,9 @@ public class CompanyPartnerService {
     @Autowired
     CompanyService companyService;
 
+    @Autowired
+    ProductService productService;
+
     public CompanyPartnerService(CompanyPartnerRepository repository) {
         this.repository = repository;
     }
@@ -35,10 +38,6 @@ public class CompanyPartnerService {
 
         partner = repository.save(partner);
         return parse2CompanyPartnerVO(partner);
-    }
-
-    public boolean isPartner(@NonNull Long fromCompanyId, @NonNull Long toCompanyId) {
-        return repository.isPartner(fromCompanyId, toCompanyId) != null;
     }
 
     public List<CompanyPartnerVO> getPartners(@NonNull Long companyId) {
@@ -112,8 +111,13 @@ public class CompanyPartnerService {
         return entities.stream().map(this::parse2CompanyPartnerVO).collect(Collectors.toList());
     }
 
-    public boolean isPartner(CompanyPartnerVO buyer, ProductVO product) {
-        return false;
+    public boolean isPartner(@NonNull Long fromCompanyId, @NonNull Long toCompanyId) {
+        return repository.isPartner(fromCompanyId, toCompanyId) != null;
+    }
+
+    public boolean isPartner(@NonNull CompanyPartnerVO buyer, @NonNull ProductVO product) {
+        Long companyId = productService.findCompanyIdByProductId(product.getKey());
+        return isPartner(buyer.getId(), companyId);
     }
 
 }

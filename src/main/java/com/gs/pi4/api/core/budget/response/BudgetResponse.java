@@ -1,9 +1,8 @@
-package com.gs.pi4.api.core.budget.request;
+package com.gs.pi4.api.core.budget.response;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,7 +15,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.gs.pi4.api.core.product.Product;
+import com.gs.pi4.api.core.budget.request.BudgetRequest;
+import com.gs.pi4.api.core.company.Company;
 import com.gs.pi4.api.core.user.User;
 
 import org.hibernate.annotations.Where;
@@ -29,10 +29,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(schema = "public", name = "budget_request_item")
+@Table(schema = "public", name = "budget_response")
 @Where(clause = "deleted_at is null")
 @Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
-public class BudgetRequestItem implements Serializable  {
+public class BudgetResponse implements Serializable  {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,16 +41,17 @@ public class BudgetRequestItem implements Serializable  {
     @Column(name = "description", nullable = true)
     private String description;
 
-    @ManyToOne(fetch = FetchType.EAGER, optional=false, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id")
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "budget_request_id")
     private BudgetRequest budgetRequest;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "product_id")
-    private Product product;
-
-    @Column(name = "quantity")
-    private Float quantity;
+    @Column(name = "expires_on")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date expiresOn;
 
 
     //user log
@@ -77,10 +78,5 @@ public class BudgetRequestItem implements Serializable  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
-
-    public BudgetRequestItem setIdAndReturnObjectItem(Long id) {
-        this.id = id;
-        return this;
-    }
 
 }

@@ -10,12 +10,14 @@ import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
 import org.dozer.Mapping;
 import org.springframework.hateoas.RepresentationModel;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter @EqualsAndHashCode(callSuper=false) @Builder
+@Getter @Setter @EqualsAndHashCode(callSuper=false) @Builder @AllArgsConstructor @NoArgsConstructor
 public class ProductVO extends RepresentationModel<ProductVO> implements Serializable {
     
     private static final long serialVersionUID = 1L;

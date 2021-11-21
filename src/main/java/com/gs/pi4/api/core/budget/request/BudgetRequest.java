@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.gs.pi4.api.core.budget.response.BudgetResponse;
 import com.gs.pi4.api.core.company.Company;
 import com.gs.pi4.api.core.user.User;
 
@@ -52,6 +53,9 @@ public class BudgetRequest implements Serializable  {
 
     @OneToMany(mappedBy = "budgetRequest", fetch = FetchType.EAGER)
     private List<BudgetRequestItem> itens;
+
+    @OneToMany(mappedBy = "budgetRequest", fetch = FetchType.LAZY)
+    private List<BudgetResponse> responses;
 
 
     //user log

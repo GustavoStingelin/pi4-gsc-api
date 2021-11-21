@@ -8,6 +8,7 @@ import com.gs.pi4.api.api.exception.BusinessException;
 import com.gs.pi4.api.api.exception.ExceptionResponse;
 import com.gs.pi4.api.api.exception.InvalidJwtAuthenticationException;
 import com.gs.pi4.api.api.exception.ResourceNotFoundException;
+import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,6 +50,13 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
 				request.getDescription(false));
 		return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_ACCEPTABLE);
+	}
+
+	@ExceptionHandler(UnauthorizedActionException.class)
+	public final ResponseEntity<ExceptionResponse> handle403Exceptions(Exception ex, WebRequest request) {
+		ExceptionResponse exceptionResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
 	}
 
 }

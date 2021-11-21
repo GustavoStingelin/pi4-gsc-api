@@ -11,5 +11,9 @@ public class UnauthorizedActionException extends RuntimeException{
 	public UnauthorizedActionException(String exception) {
 		super(exception);
 	}
+
+	public UnauthorizedActionException(String exception, String message) {
+		super(exception + " --> " + message);
+	}
 	
 }

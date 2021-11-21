@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.gs.pi4.api.app.vo.budget.BudgetRequestItemVO;
 import com.gs.pi4.api.core.budget.request.BudgetRequestItem;
-import com.gs.pi4.api.core.product.Product;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,7 +35,7 @@ public class BudgetRequestItemService {
             .id(vo.getKey())
             .quantity(vo.getQuantity())
             .description(vo.getDescription())
-            .product(Product.builder().id(vo.getProduct().getKey()).build())
+            .product(productService.findEntityById(vo.getProduct().getKey()))
             .build();
     }
 

@@ -159,4 +159,8 @@ public class ProductService {
         return imageStorageService.find(key);   
     }
 
+    public Product findEntityById(Long key) {
+        return repository.findById(key).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
+    }
+
 }

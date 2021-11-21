@@ -2,6 +2,7 @@ package com.gs.pi4.api.core.budget.response;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -45,7 +47,10 @@ public class BudgetResponse implements Serializable  {
     @JoinColumn(name = "company_id")
     private Company company;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "budgetResponse", fetch = FetchType.EAGER)
+    private List<BudgetResponseItem> itens;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "budget_request_id")
     private BudgetRequest budgetRequest;
 

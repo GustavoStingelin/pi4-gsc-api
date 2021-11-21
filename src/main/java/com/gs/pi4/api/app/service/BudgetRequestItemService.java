@@ -3,8 +3,11 @@ package com.gs.pi4.api.app.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.gs.pi4.api.api.exception.CodeExceptionEnum;
+import com.gs.pi4.api.api.exception.ResourceNotFoundException;
 import com.gs.pi4.api.app.vo.budget.BudgetRequestItemVO;
 import com.gs.pi4.api.core.budget.request.BudgetRequestItem;
+import com.gs.pi4.api.core.budget.request.BudgetRequestItemRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +19,9 @@ public class BudgetRequestItemService {
 
     @Autowired
     ProductService productService;
+
+    @Autowired
+    BudgetRequestItemRepository repository;
 
     protected BudgetRequestItemVO parse2BudgetRequestItemVO(@NonNull BudgetRequestItem entity) {
         return BudgetRequestItemVO.builder()
@@ -41,6 +47,10 @@ public class BudgetRequestItemService {
 
     protected List<BudgetRequestItem> parse(@NonNull List<BudgetRequestItemVO> itens) {
         return itens.stream().map(this::parse).collect(Collectors.toList());
+    }
+
+    protected BudgetRequestItem findEntityById( @NonNull Long id) {
+        return repository.findById(id).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
     }
 
 }

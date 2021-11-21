@@ -1,8 +1,7 @@
-package com.gs.pi4.api.core.budget.request;
+package com.gs.pi4.api.core.budget.response;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,13 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import com.gs.pi4.api.core.budget.response.BudgetResponse;
-import com.gs.pi4.api.core.company.Company;
+import com.gs.pi4.api.core.budget.request.BudgetRequestItem;
+import com.gs.pi4.api.core.product.Product;
 import com.gs.pi4.api.core.user.User;
 
 import org.hibernate.annotations.Where;
@@ -31,10 +29,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(schema = "public", name = "budget_request")
+@Table(schema = "public", name = "budget_response_item")
 @Where(clause = "deleted_at is null")
 @Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
-public class BudgetRequest implements Serializable  {
+public class BudgetResponseItem implements Serializable  {
 
     @Id 
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,19 +41,23 @@ public class BudgetRequest implements Serializable  {
     @Column(name = "description", nullable = true)
     private String description;
 
+    @Column(name = "quantity", nullable = false)
+    private Float quantity;
+
+    @Column(name = "unit_price", nullable = false)
+    private Float unitPrice;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional=false)
+    @JoinColumn(name = "budget_response_id")
+    private BudgetResponse budgetResponse;
+
+    @ManyToOne(fetch = FetchType.EAGER, optional=false)
+    @JoinColumn(name = "reference_budget_request_item_id")
+    private BudgetRequestItem reference;
+
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "company_id")
-    private Company company;
-
-    @Column(name = "expires_on")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date expiresOn;
-
-    @OneToMany(mappedBy = "budgetRequest", fetch = FetchType.EAGER)
-    private List<BudgetRequestItem> itens;
-
-    @OneToMany(mappedBy = "budgetRequest", fetch = FetchType.LAZY)
-    private List<BudgetResponse> responses;
+    @JoinColumn(name = "product_id")
+    private Product product;
 
 
     //user log
@@ -82,9 +84,6 @@ public class BudgetRequest implements Serializable  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
-
-    public BudgetRequest(Long id) {
-        this.id = id;
-    }
+    
 
 }

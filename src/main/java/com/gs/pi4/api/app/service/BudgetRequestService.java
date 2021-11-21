@@ -100,7 +100,7 @@ public class BudgetRequestService {
         return parse2BudgetRequestVO(entity);
     }
 
-    public void deleteByIdWithCompany(Long companyId, Long budgetId) {
+    public void deleteByIdWithCompany(Long companyId, Long budgetId, User user) {
         BudgetRequest entity = repository.findByBudgetWithCompany(companyId, budgetId)
                 .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
 
@@ -108,7 +108,18 @@ public class BudgetRequestService {
             throw new BusinessException(CodeExceptionEnum.BUDGET_REQUEST_HAS_RESPONSES);
         }
 
-        repository.delete(entity);
+        entity.setDeletedAt(new Date());
+        entity.setDeletedBy(user);
+        repository.save(entity);
+    }
+
+    public List<BudgetRequestVO> findAllByCompanyToPartner(@NonNull Long companyId) {
+        return parse2BudgetRequestVO(repository.findAllByCompanyToPartner(companyId).stream().map(req -> {
+            req.setItens(
+                    req.getItens().stream().filter(item -> item.getProduct().getCompany().getId().equals(companyId))
+                            .collect(Collectors.toList()));
+            return req;
+        }).collect(Collectors.toList()));
     }
 
 }

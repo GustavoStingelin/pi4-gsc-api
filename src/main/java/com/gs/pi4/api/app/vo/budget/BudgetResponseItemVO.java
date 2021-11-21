@@ -3,17 +3,18 @@ package com.gs.pi4.api.app.vo.budget;
 import java.io.Serializable;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.gs.pi4.api.app.vo.TimestampLogVO;
 import com.gs.pi4.api.app.vo.product.ProductVO;
 
 import org.dozer.Mapping;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter @EqualsAndHashCode @Builder
+@Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
 public class BudgetResponseItemVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -23,9 +24,9 @@ public class BudgetResponseItemVO implements Serializable {
 	private Long key;
 
     private ProductVO product;
+    private BudgetRequestItemVO reference;
     private Float quantity;
     private Float unitPrice;
-    private String description;
-
-    private TimestampLogVO timestampLog;
+    private String description; 
+    
 }

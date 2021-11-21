@@ -18,4 +18,7 @@ public interface BudgetRequestRepository extends JpaRepository<BudgetRequest, Lo
     @Query("SELECT b FROM BudgetRequest b WHERE b.id = :budgetId AND b.company.id = :companyId")
     Optional<BudgetRequest> findByBudgetWithCompany(@Param("companyId") Long companyId, @Param("budgetId") Long budgetId);
 
+    @Query("SELECT b FROM BudgetRequest b JOIN b.itens i WHERE i.product.company.id = :companyId")
+    List<BudgetRequest> findAllByCompanyToPartner(@Param("companyId") Long companyId);
+
 }

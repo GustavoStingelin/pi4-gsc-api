@@ -15,6 +15,7 @@ import com.gs.pi4.api.app.vo.user.UserRegistrationVO;
 import com.gs.pi4.api.core.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +45,9 @@ public class AuthController {
 
     @Autowired
     UserService service;
+
+    @Value("${security.jwt.token.expire-lenght:86400000}") // 24h
+    private long validityInMilliseconds;
 
     @Transactional
     @ApiOperation(value = "Creates a user and returns a token")
@@ -95,7 +99,7 @@ public class AuthController {
 
             ResponseCookie cookie = ResponseCookie.from("Auth-Token", "Bearer-" + token)
                 .httpOnly(true)
-                .maxAge(7200)
+                .maxAge(validityInMilliseconds - 3600000)
                 .sameSite("None")
                 .secure(true)
                 .path("/")

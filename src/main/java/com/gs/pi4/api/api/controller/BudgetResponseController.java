@@ -81,7 +81,7 @@ public class BudgetResponseController {
     public BudgetResponseVO getMyBudgetResponse(Authentication authentication, @PathVariable("companyId") Long companyId,
             @PathVariable("budgetId") Long budgetId) {
         authorization.userHasCompany(authentication, companyId);
-        return service.findByBudgetWithCompany(companyId, budgetId);
+        return service.findByBudgetWithCompany(budgetId, companyId);
     }
 
 
@@ -111,7 +111,7 @@ public class BudgetResponseController {
         authorization.userHasCompany(authentication, companyId);
         
         User user = authorization.getUser(authentication);
-        service.deleteByIdWithCompany(companyId, budgetId, user);
+        service.deleteByIdWithCompany(budgetId, companyId, user);
     }
 
     @ApiOperation(value = "Accepet a Budget Response")

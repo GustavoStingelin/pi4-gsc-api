@@ -61,8 +61,8 @@ public class BudgetResponseService {
                 .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString())));
     }
     
-    public BudgetResponseVO findByBudgetWithCompany(Long companyId, Long budgetId) {
-        return parse2BudgetResponseVO(repository.findByBudgetWithCompany(companyId, budgetId)
+    public BudgetResponseVO findByBudgetWithCompany(Long budgetId, Long companyId) {
+        return parse2BudgetResponseVO(repository.findByBudgetWithCompany(budgetId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString())), companyId);
     }
 
@@ -148,7 +148,7 @@ public class BudgetResponseService {
 
 
     public void deleteByIdWithCompany(Long companyId, Long budgetId, User user) {
-        BudgetResponse entity = repository.findByBudgetWithCompany(companyId, budgetId)
+        BudgetResponse entity = repository.findByBudgetWithCompany(budgetId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
 
         if (entity.getBuyedAt() != null) {

@@ -58,7 +58,34 @@ public class BudgetResponseController {
         return service.findAllByCompany(companyId);
     }
 
-    
+    @ApiOperation(value = "Returns a list of Budget Response to Buyer")
+    @GetMapping(value = "buyer/{companyId}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public List<BudgetResponseVO> getBuyerBudgetResponses(Authentication authentication,
+            @PathVariable("companyId") Long companyId) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!companyService.userHasCompany(user, companyId)) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findAllByCompanyToBuyer(companyId);
+    }
+
+    @ApiOperation(value = "Returns a Budget Response to Buyer")
+    @GetMapping(value = "buyer/{companyId}/budget/{budgetId}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public BudgetResponseVO getBuyerBudgetResponse(Authentication authentication,
+            @PathVariable("companyId") Long companyId, @PathVariable("budgetId") Long budgetId) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!companyService.userHasCompany(user, companyId)) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findByIdWithCompanyToBuyer(budgetId, companyId);
+    }
+
     @ApiOperation(value = "Returns a Budget Response")
     @GetMapping(value = "my/company/{companyId}/budget/{budgetId}", produces = { "application/json", "application/xml",
             "application/x-yaml" })

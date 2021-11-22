@@ -51,6 +51,15 @@ public class BudgetResponseService {
     public List<BudgetResponseVO> findAllByCompany(@NonNull Long companyId) {
         return parse2BudgetResponseVO(repository.findAllByCompany(companyId), companyId);
     }
+
+    public List<BudgetResponseVO> findAllByCompanyToBuyer(@NonNull Long companyId) {
+        return parse2BudgetResponseVO(repository.findAllByCompanyToBuyer(companyId));
+    }
+
+    public BudgetResponseVO findByIdWithCompanyToBuyer(@NonNull Long budgetId, @NonNull Long companyId) {
+        return parse2BudgetResponseVO(repository.findByIdWithCompanyToBuyer(budgetId, companyId)
+                .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString())));
+    }
     
     public BudgetResponseVO findByBudgetWithCompany(Long companyId, Long budgetId) {
         return parse2BudgetResponseVO(repository.findByBudgetWithCompany(companyId, budgetId)

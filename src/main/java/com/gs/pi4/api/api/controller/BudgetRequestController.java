@@ -66,6 +66,20 @@ public class BudgetRequestController {
         return service.findAllByCompanyToPartner(companyId);
     }
 
+    @ApiOperation(value = "Returns a Provider Budget Request")
+    @GetMapping(value = "provider/{companyId}/budget/{budgetId}", produces = { "application/json", "application/xml",
+            "application/x-yaml" })
+    public BudgetRequestVO getProviderBudgetRequest(Authentication authentication,
+            @PathVariable("companyId") Long companyId, @PathVariable("budgetId") Long budgetId) {
+        User user = (User) authentication.getPrincipal();
+
+        if (!companyService.userHasCompany(user, companyId)) {
+            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
+        }
+
+        return service.findByIdWithCompanyToPartner(budgetId, companyId);
+    }
+
     @ApiOperation(value = "Returns a Budget Request")
     @GetMapping(value = "my/company/{companyId}/budget/{budgetId}", produces = { "application/json", "application/xml",
             "application/x-yaml" })

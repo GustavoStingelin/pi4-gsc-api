@@ -30,5 +30,7 @@ public class BudgetRequestVO implements Serializable {
     private String description;
     private Date expiresOn;
     private List<BudgetResponseVO> budgetResponses;
+    private List<Long> budgetResponseIds;
+
 
 }

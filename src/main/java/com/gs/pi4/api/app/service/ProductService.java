@@ -163,4 +163,10 @@ public class ProductService {
         return repository.findById(key).orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
     }
 
+    public boolean isCompanyOfProductId(Long productId, Long companyId) {
+        return repository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()))
+                .getCompany().getId().equals(companyId);
+    }
+
 }

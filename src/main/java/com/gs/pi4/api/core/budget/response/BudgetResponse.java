@@ -58,6 +58,10 @@ public class BudgetResponse implements Serializable  {
     @Temporal(TemporalType.TIMESTAMP)
     private Date expiresOn;
 
+    @Column(name = "buyed_at")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date buyedAt;
+
 
     //user log
     @Column(name = "created_at", nullable = false)

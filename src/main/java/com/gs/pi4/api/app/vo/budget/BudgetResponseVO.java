@@ -9,12 +9,14 @@ import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
 
 import org.dozer.Mapping;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter @EqualsAndHashCode @Builder
+@Getter @Setter @EqualsAndHashCode @Builder @NoArgsConstructor @AllArgsConstructor
 public class BudgetResponseVO implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -24,9 +26,9 @@ public class BudgetResponseVO implements Serializable {
 	private Long key;
 
     private CompanyPartnerVO supplier;
-    private CompanyPartnerVO buyer;
     private BudgetRequestVO budgetRequest;
     private List<BudgetResponseItemVO> itens;
     private String description;
     private Date expiresOn;
+    private Date buyedAt;
 }

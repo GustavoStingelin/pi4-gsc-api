@@ -99,11 +99,12 @@ public class CompanyPartnerService {
 
     protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull CompanyPartner entity) {
         return CompanyPartnerVO.builder().id(entity.getToCompany().getId())
+                .document(entity.getToCompany().getDocument())
                 .name(entity.getToCompany().getName()).isAccepted(entity.isAccepted()).build();
     }
 
     protected CompanyPartnerVO parse2CompanyPartnerVO(@NonNull Company entity) {
-        return CompanyPartnerVO.builder().id(entity.getId()).name(entity.getName())
+        return CompanyPartnerVO.builder().id(entity.getId()).name(entity.getName()).document(entity.getDocument())
                 .build();
     }
 

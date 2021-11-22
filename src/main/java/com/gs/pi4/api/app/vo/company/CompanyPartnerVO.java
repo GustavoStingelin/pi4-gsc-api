@@ -17,6 +17,7 @@ public class CompanyPartnerVO implements Serializable {
 
     private Long id;
     private String name;
+    private String document;
     private boolean isAccepted;
 }
 

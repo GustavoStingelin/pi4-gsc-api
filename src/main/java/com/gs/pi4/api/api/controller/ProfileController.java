@@ -2,8 +2,8 @@ package com.gs.pi4.api.api.controller;
 
 import com.gs.pi4.api.api.security.jwt.JwtTokenProvider;
 import com.gs.pi4.api.app.service.UserService;
+import com.gs.pi4.api.app.service.security.AuthorizationService;
 import com.gs.pi4.api.app.vo.user.UserBasicVO;
-import com.gs.pi4.api.core.user.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,11 +30,14 @@ public class ProfileController {
     @Autowired
     UserService service;
 
+    @Autowired
+    AuthorizationService authorization;
+
     @Transactional
     @ApiOperation(value = "Returns a simple User")
     @GetMapping(produces = { "application/json", "application/xml", "application/x-yaml" })
     public UserBasicVO getMyBasicProfile(Authentication authentication) {
-        return service.parseUser2UserBasicVO((User) authentication.getPrincipal());
+        return service.parseUser2UserBasicVO(authorization.getUser(authentication));
     }
 
 }

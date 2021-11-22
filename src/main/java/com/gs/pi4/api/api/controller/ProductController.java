@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.gs.pi4.api.api.exception.CodeExceptionEnum;
-import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 import com.gs.pi4.api.app.service.CompanyService;
 import com.gs.pi4.api.app.service.ProductService;
+import com.gs.pi4.api.app.service.security.AuthorizationService;
 import com.gs.pi4.api.app.vo.product.ProductCreateVO;
 import com.gs.pi4.api.app.vo.product.ProductVO;
 import com.gs.pi4.api.core.user.User;
@@ -54,6 +54,9 @@ public class ProductController {
     CompanyService companyService;
 
     @Autowired
+    AuthorizationService authorization;
+
+    @Autowired
     private PagedResourcesAssembler<ProductVO> assembler;
 
     @Transactional
@@ -64,11 +67,7 @@ public class ProductController {
             @RequestParam(value = "page", defaultValue = "0") int pageRequest,
             @RequestParam(value = "limit", defaultValue = "10") int size,
             @RequestParam(value = "direction", defaultValue = "asc") String direction) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
+        authorization.userHasCompany(authentication, companyId);
 
         var sortDirection = "desc".equalsIgnoreCase(direction) ? Direction.DESC : Direction.ASC;
         Pageable pageable = PageRequest.of(pageRequest, size, Sort.by(sortDirection, "name"));
@@ -86,13 +85,7 @@ public class ProductController {
     @ApiOperation(value = "Returns a product")
     @GetMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
     public ProductVO findById(Authentication authentication, @PathVariable("id") Long id) {
-
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, service.findCompanyIdByProductId(id));
         return service.findById(id);
     }
 
@@ -118,11 +111,9 @@ public class ProductController {
     @ApiOperation(value = "Create a product")
     @PostMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" })
     public ProductVO create(Authentication authentication, @ModelAttribute ProductCreateVO vo) {
-        User user = (User) authentication.getPrincipal();
-        if (!companyService.userHasCompany(user, vo.getCompanyId())) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
+        authorization.userHasCompany(authentication, vo.getCompanyId());
 
+        User user = (User) authentication.getPrincipal();
         return service.create(user, vo);
     }
 
@@ -130,11 +121,7 @@ public class ProductController {
     @GetMapping(value = "/company/{id}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
     public List<ProductVO> getAllInPartners(Authentication authentication, @PathVariable("id") Long id) {
-        User user = (User) authentication.getPrincipal();
-        if (!companyService.userHasCompany(user, id)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, id);
         return service.findAllByCompanyInPartner(id);
     }
 
@@ -142,11 +129,7 @@ public class ProductController {
     @GetMapping(value = "/{id2}/company/{id}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
     public ProductVO getProduct(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
-        User user = (User) authentication.getPrincipal();
-        if (!companyService.userHasCompany(user, id)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, id);
         return service.findByIdInCompanyPartner(id, id2);
     }
 
@@ -155,11 +138,7 @@ public class ProductController {
     @GetMapping(value = "/company/{id}/of_company/{id2}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
     public List<ProductVO> getAllInCompany(Authentication authentication, @PathVariable("id") Long id, @PathVariable("id2") Long id2) {
-        User user = (User) authentication.getPrincipal();
-        if (!companyService.userHasCompany(user, id)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, id);
         return service.findAllByCompanyInPartner(id, id2);
     }
 
@@ -168,16 +147,10 @@ public class ProductController {
     @PutMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
     public ProductVO update(Authentication authentication, @ModelAttribute ProductCreateVO vo,
             @PathVariable("id") Long id) {
-        User user = (User) authentication.getPrincipal();
+        authorization.userHasCompany(authentication, service.findCompanyIdByProductId(id));
+        authorization.userHasCompany(authentication, vo.getCompanyId());
 
-        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
-        if (!companyService.userHasCompany(user, vo.getCompanyId())) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        User user = authorization.getUser(authentication);
         return service.update(user, id, vo);
     }
 
@@ -185,12 +158,9 @@ public class ProductController {
     @ApiOperation(value = "Delete a product")
     @DeleteMapping(value = "my/{id}", produces = { "application/json", "application/xml", "application/x-yaml" })
     public void delete(Authentication authentication, @PathVariable("id") Long id) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, service.findCompanyIdByProductId(id))) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, service.findCompanyIdByProductId(id));
+        
+        User user = authorization.getUser(authentication);
         service.delete(user, id);
     }
 

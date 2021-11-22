@@ -1,6 +1,7 @@
 package com.gs.pi4.api.core.budget.request;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -85,6 +86,13 @@ public class BudgetRequest implements Serializable  {
 
     public BudgetRequest(Long id) {
         this.id = id;
+    }
+
+    public List<BudgetResponse> getResponses () {
+        if (this.responses == null) {
+            this.responses = new ArrayList<>();
+        }
+        return this.responses;
     }
 
 }

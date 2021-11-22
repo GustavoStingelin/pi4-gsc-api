@@ -7,6 +7,7 @@ import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 import com.gs.pi4.api.app.service.BudgetRequestService;
 import com.gs.pi4.api.app.service.CompanyPartnerService;
 import com.gs.pi4.api.app.service.CompanyService;
+import com.gs.pi4.api.app.service.security.AuthorizationService;
 import com.gs.pi4.api.app.vo.budget.BudgetRequestVO;
 import com.gs.pi4.api.core.user.User;
 
@@ -38,17 +39,15 @@ public class BudgetRequestController {
     @Autowired
     CompanyPartnerService companyPartnerService;
 
+    @Autowired
+    AuthorizationService authorization;
+
     @ApiOperation(value = "Returns a list of my Budget Requests")
     @GetMapping(value = "my/company/{companyId}", produces = { "application/json", "application/xml",
             "application/x-yaml" })
     public List<BudgetRequestVO> getMyBudgetRequests(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findAllByCompany(companyId);
     }
 
@@ -57,12 +56,7 @@ public class BudgetRequestController {
             "application/x-yaml" })
     public List<BudgetRequestVO> getProviderBudgetRequests(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findAllByCompanyToPartner(companyId);
     }
 
@@ -71,12 +65,7 @@ public class BudgetRequestController {
             "application/x-yaml" })
     public BudgetRequestVO getProviderBudgetRequest(Authentication authentication,
             @PathVariable("companyId") Long companyId, @PathVariable("budgetId") Long budgetId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findByIdWithCompanyToPartner(budgetId, companyId);
     }
 
@@ -85,12 +74,7 @@ public class BudgetRequestController {
             "application/x-yaml" })
     public BudgetRequestVO getMyBudgetRequest(Authentication authentication, @PathVariable("companyId") Long companyId,
             @PathVariable("budgetId") Long budgetId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findByBudgetWithCompany(companyId, budgetId);
     }
 
@@ -99,12 +83,9 @@ public class BudgetRequestController {
             "application/x-yaml" })
     public void deleteMyBudgetRequest(Authentication authentication, @PathVariable("companyId") Long companyId,
             @PathVariable("budgetId") Long budgetId) {
-        User user = (User) authentication.getPrincipal();
+        authorization.userHasCompany(authentication, companyId);
 
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        User user = authorization.getUser(authentication);
         service.deleteByIdWithCompany(companyId, budgetId, user);
     }
 
@@ -113,12 +94,7 @@ public class BudgetRequestController {
     @PostMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" }, consumes = {
             "application/json", "application/xml", "application/x-yaml" })
     public BudgetRequestVO create(Authentication authentication, @RequestBody BudgetRequestVO vo) {
-        User user = (User) authentication.getPrincipal();
-
-        // TODO: Abstract this to a AuthorizationService
-        if (!companyService.userHasCompany(user, vo.getBuyer().getId())) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
+        authorization.userHasCompany(authentication, vo.getBuyer().getId());
 
         vo.getItens().stream().forEach(el -> {
             if (!companyPartnerService.isPartner(vo.getBuyer(), el.getProduct())) {
@@ -127,6 +103,7 @@ public class BudgetRequestController {
             }
         });
 
+        User user = authorization.getUser(authentication);
         return service.create(user, vo);
     }
 

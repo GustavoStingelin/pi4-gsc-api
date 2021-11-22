@@ -73,6 +73,7 @@ public class BudgetResponseService {
                 .expiresOn(entity.getExpiresOn())
                 .supplier(companyPartnerService.parse2CompanyPartnerVO(entity.getCompany()))
                 .itens(budgetResponseItemService.parse2BudgetResponseItemVO(entity.getItens()))
+                .buyedAt(entity.getBuyedAt())
                 .budgetRequest(budgetRequestService
                         .parse2BudgetRequestVO(budgetRequestService.findEntityById(entity.getBudgetRequest().getId())))
                 .build();
@@ -159,8 +160,8 @@ public class BudgetResponseService {
         repository.save(entity);
     }
 
-    public BudgetResponseVO acceptBudget(Long companyId, Long budgetId, User user) {
-        BudgetResponse entity = repository.findByBudgetWithCompany(companyId, budgetId)
+    public BudgetResponseVO acceptBudget(Long budgetId, Long companyId, User user) {
+        BudgetResponse entity = repository.findByBudgetWithCompany(budgetId, companyId)
                 .orElseThrow(() -> new ResourceNotFoundException(CodeExceptionEnum.RESOURCE_NOT_FOUND.toString()));
 
         if (entity.getBuyedAt() != null) {

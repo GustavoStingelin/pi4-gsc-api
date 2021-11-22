@@ -3,6 +3,7 @@ package com.gs.pi4.api.api.controller;
 import java.util.List;
 
 import com.gs.pi4.api.app.service.CompanyService;
+import com.gs.pi4.api.app.service.security.AuthorizationService;
 import com.gs.pi4.api.app.vo.company.CompanyVO;
 import com.gs.pi4.api.core.user.User;
 
@@ -26,11 +27,14 @@ public class CompanyController {
     @Autowired
     CompanyService service;
 
+    @Autowired
+    AuthorizationService authorization;
+
     @Transactional
     @ApiOperation(value = "Returns a list of my companies")
     @GetMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" })
     public List<CompanyVO> getMyCompanies(Authentication authentication) {
-        User user = (User) authentication.getPrincipal();
+        User user = authorization.getUser(authentication);
         return service.findAllByUserId(user.getId());
     }
 
@@ -39,7 +43,7 @@ public class CompanyController {
     @PostMapping(value = "my", produces = { "application/json", "application/xml", "application/x-yaml" }, consumes = {
             "application/json", "application/xml", "application/x-yaml" })
     public CompanyVO createMyCompany(Authentication authentication, @RequestBody CompanyVO vo) {
-        User user = (User) authentication.getPrincipal();
+        User user = authorization.getUser(authentication);
         vo.setKey(null);
         vo.setLogo(1L);
         return service.createCompany(vo, user);

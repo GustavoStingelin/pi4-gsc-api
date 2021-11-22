@@ -7,6 +7,7 @@ import com.gs.pi4.api.api.exception.CodeExceptionEnum;
 import com.gs.pi4.api.api.exception.UnauthorizedActionException;
 import com.gs.pi4.api.app.service.CompanyPartnerService;
 import com.gs.pi4.api.app.service.CompanyService;
+import com.gs.pi4.api.app.service.security.AuthorizationService;
 import com.gs.pi4.api.app.vo.company.CompanyPartnerVO;
 import com.gs.pi4.api.core.user.User;
 
@@ -34,16 +35,14 @@ public class CompanyPartnerController {
     @Autowired
     CompanyService companyService;
 
+    @Autowired
+    AuthorizationService authorization;
+
     @ApiOperation(value = "Returns a list of CompanyPartner")
     @GetMapping(value = "company/{companyId}", produces = { "application/json", "application/xml", "application/x-yaml" })
     public List<CompanyPartnerVO> getPartners(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.getPartners(companyId);
     }
 
@@ -52,12 +51,7 @@ public class CompanyPartnerController {
     @GetMapping(value = "company/{companyId}/pending", produces = { "application/json", "application/xml", "application/x-yaml" })
     public List<CompanyPartnerVO> getPendingPartners(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findAllPendingPartners(companyId);
     }
 
@@ -65,11 +59,7 @@ public class CompanyPartnerController {
     @GetMapping(value = "company/{companyId}/pending_for_me", produces = { "application/json", "application/xml", "application/x-yaml" })
     public List<CompanyPartnerVO> getPendingPartnersForMe(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
+        authorization.userHasCompany(authentication, companyId);
         return service.findAllPendingRequestsForMe(companyId);
     }
 
@@ -78,12 +68,7 @@ public class CompanyPartnerController {
     @GetMapping(value = "company/{companyId}/excepts_my", produces = { "application/json", "application/xml", "application/x-yaml" })
     public List<CompanyPartnerVO> findAllExceptsMy(Authentication authentication,
             @PathVariable("companyId") Long companyId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, companyId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
+        authorization.userHasCompany(authentication, companyId);
         return service.findAllExceptsCompanyId(companyId);
     }
 
@@ -93,12 +78,13 @@ public class CompanyPartnerController {
             "application/x-yaml" })
     public CompanyPartnerVO sendPartnerRequest(Authentication authentication, @PathVariable("fromId") Long fromId,
             @PathVariable("toId") Long toId) {
-        User user = (User) authentication.getPrincipal();
-
-        if (!companyService.userHasCompany(user, fromId) || Objects.equals(fromId, toId)) {
+        authorization.userHasCompany(authentication, fromId);
+        
+        if ( Objects.equals(fromId, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
-
+                
+        User user = authorization.getUser(authentication);
         return service.sendPartnerRequest(companyService.findById(fromId), companyService.findById(toId), user);
     }
 
@@ -108,14 +94,9 @@ public class CompanyPartnerController {
             "application/x-yaml" })
     public void declinePartnerRequest(Authentication authentication, @PathVariable("fromId") Long fromId,
             @PathVariable("toId") Long toId) {
-        User user = (User) authentication.getPrincipal();
+        authorization.userHasAnyCompany(authentication, fromId, toId);
 
         if (Objects.equals(fromId, toId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
-        if (!companyService.userHasCompany(user, fromId)
-                && !companyService.userHasCompany(user, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 
@@ -128,13 +109,9 @@ public class CompanyPartnerController {
             "application/x-yaml" })
     public void acceptPartnerRequest(Authentication authentication, @PathVariable("fromId") Long fromId,
             @PathVariable("toId") Long toId) {
-        User user = (User) authentication.getPrincipal();
+        authorization.userHasCompany(authentication, fromId);
 
         if (Objects.equals(fromId, toId)) {
-            throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
-        }
-
-        if (!companyService.userHasCompany(user, toId)) {
             throw new UnauthorizedActionException(CodeExceptionEnum.UNAUTHORIZED_RESOURCE_ACCESS.toString());
         }
 

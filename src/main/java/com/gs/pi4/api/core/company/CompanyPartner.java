@@ -45,7 +45,7 @@ public class CompanyPartner implements Serializable  {
     private Company toCompany;
 
     @Column(name = "is_accepted")
-    private boolean isAccepted;
+    private Boolean isAccepted;
 
 
     //user log
@@ -64,5 +64,17 @@ public class CompanyPartner implements Serializable  {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deleted_by")
     private User deletedBy;
+
+    public boolean isAccepted() {
+        if (isAccepted == null) {
+            return false;
+        } else {
+            return isAccepted;
+        }
+    }
+
+    public void setAccepted(boolean b) {
+        isAccepted = b;
+    }
 
 }
